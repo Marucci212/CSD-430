@@ -1,0 +1,87 @@
+<!--
+  File: index.html
+  Author: Justin Marucci
+  Date: 10/29/2025
+  Class: CSD-430 Module 3
+  Description:
+    Restaurant Experience Feedback Form
+    User enters visit details and opinion.
+    Form sends data to results.jsp using POST.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Restaurant Experience Feedback</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <h1>Restaurant Experience Feedback</h1>
+  <p>Please tell us about your most recent visit. Fields marked * are required.</p>
+
+  <form action="results.jsp" method="post">
+    <!-- Customer Name -->
+    <label for="custName">Your Name *</label><br>
+    <input type="text" id="custName" name="custName" required>
+    <br><br>
+
+    <!-- Email -->
+    <label for="custEmail">Email (for follow-up)</label><br>
+    <input type="email" id="custEmail" name="custEmail" placeholder="name@example.com">
+    <br><br>
+
+    <!-- Visit Date -->
+    <label for="visitDate">Date of Visit *</label><br>
+    <input type="date" id="visitDate" name="visitDate" required>
+    <br><br>
+
+    <!-- Rating (1-5) -->
+    <label>Overall Rating *</label><br>
+    <label>
+      <input type="radio" name="rating" value="1" required> 1 - Terrible
+    </label><br>
+    <label>
+      <input type="radio" name="rating" value="2"> 2 - Poor
+    </label><br>
+    <label>
+      <input type="radio" name="rating" value="3"> 3 - Okay
+    </label><br>
+    <label>
+      <input type="radio" name="rating" value="4"> 4 - Good
+    </label><br>
+    <label>
+      <input type="radio" name="rating" value="5"> 5 - Excellent
+    </label>
+    <br><br>
+
+    <!-- Favorite Item (Dropdown select) -->
+    <label for="favoriteItem">Favorite menu item *</label><br>
+    <select id="favoriteItem" name="favoriteItem" required>
+      <option value="">-- choose one --</option>
+      <option value="Burger">Burger</option>
+      <option value="Wings">Wings</option>
+      <option value="Salad">Salad</option>
+      <option value="Pasta">Pasta</option>
+      <option value="Tacos">Tacos</option>
+    </select>
+    <br><br>
+
+    <!-- Comments textarea -->
+    <label for="comments">Comments about service or food *</label><br>
+    <textarea id="comments" name="comments" rows="4" cols="40" placeholder="What went well? Anything we should fix?" required></textarea>
+    <br><br>
+
+    <!-- Submit button -->
+    <button type="submit">Submit Feedback</button>
+  </form>
+
+  <hr>
+
+  <p class="disclaimer">
+    Data use notice: This form collects basic visit information for quality improvement.
+  </p>
+
+</body>
+</html>
