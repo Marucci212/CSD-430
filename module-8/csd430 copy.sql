@@ -42,7 +42,7 @@ INSERT INTO justin_movies_data (title, release_year, genre, director, runtime_mi
 ('Spider-Man: Into the Spider-Verse', 2018, 'Animation', 'Bob Persichetti', 117, 'PG', 8.4),
 ('Gladiator', 2000, 'Action', 'Ridley Scott', 155, 'R', 8.5);
 
--- Quick verification queries (handy for screenshots)
+-- Quick verification queries 
 -- SHOW DATABASES;
 -- USE CSD430;
 -- SHOW TABLES;

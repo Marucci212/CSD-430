@@ -1,6 +1,25 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.marucci.model.MovieBean" %>
+
+<%
+    request.setCharacterEncoding("UTF-8");
+
+    String movieIdParam = request.getParameter("movieId");
+    List<MovieBean> movies = null;
+    MovieBean selectedMovie = null;
+    String error = null;
+
+    try {
+        movies = MovieBean.getAllMovies();
+        if (movieIdParam != null && movieIdParam.trim().length() > 0) {
+            int id = Integer.parseInt(movieIdParam);
+            selectedMovie = MovieBean.getMovieById(id);
+        }
+    } catch (Exception e) {
+        error = e.getMessage();
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,116 +28,79 @@
         body { font-family: Arial, sans-serif; margin: 20px; }
         h1, h2 { margin-bottom: 10px; }
         label { display: block; margin-top: 8px; }
-        input[type=text], input[type=number] { width: 250px; }
-        select { width: 260px; }
-        table { border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #333; padding: 8px; }
-        .error { color: red; margin-top: 10px; }
+        input[type=text], input[type=number] { width: 260px; }
+        select { width: 280px; }
+        .error { color: #b00020; margin-top: 10px; }
         .nav { margin-top: 20px; }
     </style>
 </head>
 <body>
 <h1>Update Existing Movie</h1>
 
-<%
-    // JSP Scriptlet: Load all movies for the dropdown
-    List<MovieBean> movies = null;
-    String loadError = null;
-
-    try {
-        movies = MovieBean.getAllMovies();
-    } catch (Exception e) {
-        loadError = "Error loading movies: " + e.getMessage();
-    }
-
-    // Determine if a movie has been selected from the dropdown
-    String selectedId = request.getParameter("movieId");
-    MovieBean selectedMovie = null;
-
-    if (selectedId != null && !selectedId.trim().isEmpty()) {
-        try {
-            int id = Integer.parseInt(selectedId);
-            selectedMovie = MovieBean.getMovieById(id);
-        } catch (Exception e) {
-            loadError = "Error loading selected movie: " + e.getMessage();
-        }
-    }
-%>
-
-<%-- Display any errors loading data --%>
-<% if (loadError != null) { %>
-    <p class="error"><%= loadError %></p>
+<% if (error != null) { %>
+    <p class="error">Error: <%= error %></p>
 <% } %>
 
-<%-- Form 1: Dropdown list of key values (movie IDs) from the database --%>
+<h2>Step 1: Choose a Movie</h2>
 <form method="get" action="record.jsp">
-    <label for="movieId">Select Movie ID to Update:</label>
+    <label for="movieId">Movie (by key):</label>
     <select name="movieId" id="movieId">
-        <option value="">-- Select Movie ID --</option>
+        <option value="">-- Select a Movie --</option>
         <%
             if (movies != null) {
                 for (MovieBean m : movies) {
+                    int id = m.getId();
+                    boolean selected = (selectedMovie != null && id == selectedMovie.getId());
         %>
-        <option value="<%= m.getMovieId() %>"
-                <%= (selectedMovie != null && m.getMovieId() == selectedMovie.getMovieId() ? "selected" : "") %>>
-            <%= m.getMovieId() %>
-        </option>
+                    <option value="<%= id %>" <%= selected ? "selected" : "" %>>
+                        <%= id %> - <%= m.getTitle() %>
+                    </option>
         <%
                 }
             }
         %>
     </select>
     <br><br>
-    <input type="submit" value="Load Record">
+    <input type="submit" value="Load Movie">
 </form>
 
-<hr>
-
-<%-- Form 2: Display all fields as inputs (except key field, which is read-only) --%>
-<%
-    // Only show the update form if a record was successfully selected
-    if (selectedMovie != null) {
-%>
-    <h2>Update Movie Details</h2>
-
+<% if (selectedMovie != null) { %>
+    <h2>Step 2: Edit Movie Fields</h2>
     <form method="post" action="processupdate.jsp">
-        <%-- Key field displayed but not editable; stored in hidden field for processing --%>
-        <label>Movie ID (not editable):</label>
-        <span><%= selectedMovie.getMovieId() %></span>
-        <input type="hidden" name="movieId" value="<%= selectedMovie.getMovieId() %>">
+        <!-- Non-updateable key field -->
+        <p>
+            <strong>Movie ID (key):</strong>
+            <span><%= selectedMovie.getId() %></span>
+            <input type="hidden" name="movieId" value="<%= selectedMovie.getId() %>">
+        </p>
 
-        <%-- Remaining fields are editable input tags (minimum 5 fields total) --%>
-        <label for="title">Title:</label>
-        <input type="text" name="title" id="title"
-               value="<%= selectedMovie.getTitle() %>" required>
+        <label>Title:
+            <input type="text" name="title" value="<%= selectedMovie.getTitle() %>">
+        </label>
 
-        <label for="director">Director:</label>
-        <input type="text" name="director" id="director"
-               value="<%= selectedMovie.getDirector() %>" required>
+        <label>Director:
+            <input type="text" name="director" value="<%= selectedMovie.getDirector() %>">
+        </label>
 
-        <label for="genre">Genre:</label>
-        <input type="text" name="genre" id="genre"
-               value="<%= selectedMovie.getGenre() %>" required>
+        <label>Genre:
+            <input type="text" name="genre" value="<%= selectedMovie.getGenre() %>">
+        </label>
 
-        <label for="year">Year:</label>
-        <input type="number" name="year" id="year"
-               value="<%= selectedMovie.getYear() %>" required>
+        <label>Year:
+            <input type="number" name="year" value="<%= selectedMovie.getYear() %>">
+        </label>
 
-        <label for="rating">Rating:</label>
-        <input type="text" name="rating" id="rating"
-               value="<%= selectedMovie.getRating() %>" required>
+        <label>IMDB Rating (0.0–10.0):
+            <input type="text" name="rating" value="<%= selectedMovie.getRating() %>">
+        </label>
 
         <br><br>
         <input type="submit" value="Save Changes">
     </form>
-<%
-    } // end if selectedMovie != null
-%>
+<% } %>
 
 <div class="nav">
     <p><a href="index.jsp">Return to Index</a></p>
 </div>
-
 </body>
 </html>
-
